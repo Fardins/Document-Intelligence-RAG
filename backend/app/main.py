@@ -68,7 +68,7 @@ app = FastAPI(
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=["https://document-intelligence-rag-bpjw.onrender.com"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
