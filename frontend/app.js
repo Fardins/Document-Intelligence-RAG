@@ -1,6 +1,6 @@
 /* Docket AI — framework-free frontend for the FastAPI RAG API */
 
-const API_BASE = window.DOCKET_API_BASE || "http://127.0.0.1:8001";
+const API_BASE = window.DOCKET_API_BASE || "https://document-intelligence-rag-1.onrender.com/";
 
 const $ = (id) => document.getElementById(id);
 
