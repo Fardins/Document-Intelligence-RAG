@@ -237,6 +237,7 @@ async function uploadFile(file) {
       method: "POST",
       body: formData
     });
+    console.log("Upload response:", res.status, res.statusText);
 
     setUploadProgress(true, 62, "Extracting text & building chunks…");
 
