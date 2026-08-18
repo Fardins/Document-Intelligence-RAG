@@ -1,0 +1,76 @@
+version: "3.9"
+
+services:
+
+  # ------------------------------------------------------------------
+  # Backend - FastAPI + RAG
+  # ------------------------------------------------------------------
+  backend:
+    build: ./backend
+
+    ports:
+      - "8001:8000"
+
+    env_file:
+      - ./backend/.env
+
+    environment:
+      # Hugging Face
+      HF_TOKEN: ${HF_TOKEN}
+      EMBEDDING_MODEL: ${EMBEDDING_MODEL:-sentence-transformers/all-MiniLM-L6-v2}
+
+      # Groq
+      GROQ_API_KEY: ${GROQ_API_KEY}
+      GROQ_MODEL: ${GROQ_MODEL:-llama-3.1-8b-instant}
+
+      # ChromaDB
+      CHROMA_PATH: /app/chroma_store
+      CHROMA_COLLECTION: ${CHROMA_COLLECTION:-book_chunks}
+
+      # Chunking
+      CHUNK_SIZE_WORDS: ${CHUNK_SIZE_WORDS:-220}
+      CHUNK_OVERLAP_WORDS: ${CHUNK_OVERLAP_WORDS:-40}
+
+      # Retrieval
+      TOP_K: ${TOP_K:-4}
+
+      # Upload
+      MAX_FILE_SIZE_MB: ${MAX_FILE_SIZE_MB:-25}
+
+    volumes:
+      # Persistent ChromaDB storage
+      - chroma_data:/app/chroma_store
+
+      # Uploaded files
+      - upload_data:/app/storage/uploads
+
+    restart: unless-stopped
+
+
+  # ------------------------------------------------------------------
+  # Frontend - Nginx
+  # ------------------------------------------------------------------
+  frontend:
+    image: nginx:alpine
+
+    ports:
+      - "3000:80"
+
+    volumes:
+      - ./frontend:/usr/share/nginx/html:ro
+
+    depends_on:
+      - backend
+
+    restart: unless-stopped
+
+
+# --------------------------------------------------------------------
+# Persistent Docker volumes
+# --------------------------------------------------------------------
+
+volumes:
+
+  chroma_data:
+
+  upload_data:

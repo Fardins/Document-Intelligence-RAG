@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#0b1020">
+  <title>Docket AI — Document Intelligence</title>
+  <meta name="description" content="AI-powered document intelligence and cited question answering.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="app-shell">
+
+    <aside class="sidebar" id="sidebar">
+      <div class="brand">
+        <div class="brand-mark">
+          <svg viewBox="0 0 32 32" aria-hidden="true">
+            <path d="M9 4h11l5 5v19H9a4 4 0 0 1-4-4V8a4 4 0 0 1 4-4Z"/>
+            <path d="M20 4v6h6M10 15h12M10 20h12M10 25h7"/>
+          </svg>
+        </div>
+        <div>
+          <div class="brand-name">Docket<span>AI</span></div>
+          <div class="brand-sub">Document Intelligence</div>
+        </div>
+      </div>
+
+      <button class="new-chat-btn" id="newChatButton">
+        <span class="plus">+</span>
+        New conversation
+      </button>
+
+      <div class="sidebar-section">
+        <div class="section-heading">
+          <span>Your documents</span>
+          <span class="count-badge" id="docCount">0</span>
+        </div>
+        <div class="document-list" id="docRegistry">
+          <div class="sidebar-empty" id="registryEmpty">
+            <div class="empty-icon">◫</div>
+            <p>No documents yet</p>
+            <span>Upload a PDF or TXT to begin.</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="sidebar-bottom">
+        <div class="pipeline-card">
+          <div class="pipeline-title">
+            <span class="pulse-dot"></span>
+            RAG pipeline
+          </div>
+          <div class="pipeline-flow">
+            <span>Embed</span><i>→</i><span>Retrieve</span><i>→</i><span>Generate</span>
+          </div>
+        </div>
+        <div class="connection">
+          <span class="status-dot" id="statusDot"></span>
+          <span id="statusText">Connecting…</span>
+        </div>
+      </div>
+    </aside>
+
+    <main class="main">
+      <header class="topbar">
+        <button class="mobile-menu" id="mobileMenu" aria-label="Open menu">☰</button>
+        <div class="topbar-title">
+          <span class="eyebrow">WORKSPACE</span>
+          <h1 id="workspaceTitle">Document Assistant</h1>
+        </div>
+        <div class="topbar-actions">
+          <div class="engine-pill">
+            <span class="engine-dot"></span>
+            <span>AI Ready</span>
+          </div>
+        </div>
+      </header>
+
+      <section class="workspace">
+        <div class="welcome" id="emptyState">
+          <div class="hero-glow"></div>
+          <div class="hero-icon">
+            <svg viewBox="0 0 48 48" aria-hidden="true">
+              <path d="M14 5h16l9 9v28H14a5 5 0 0 1-5-5V10a5 5 0 0 1 5-5Z"/>
+              <path d="M30 5v10h9M16 24h16M16 30h16M16 36h10"/>
+            </svg>
+          </div>
+          <span class="hero-kicker">INTELLIGENT DOCUMENT Q&A</span>
+          <h2>Ask your documents<br><em>anything.</em></h2>
+          <p>Upload a document and get concise answers grounded in your content, with transparent evidence and relevance scores.</p>
+
+          <div class="upload-zone" id="dropzone">
+            <input type="file" id="fileInput" accept=".pdf,.txt" hidden>
+            <div class="upload-icon">↑</div>
+            <div>
+              <strong>Drop your document here</strong>
+              <span>PDF or TXT · up to 25 MB</span>
+            </div>
+            <button type="button" class="browse-btn">Browse files</button>
+          </div>
+
+          <div class="feature-row">
+            <div><b>01</b><span>Semantic search</span></div>
+            <div><b>02</b><span>Smart reranking</span></div>
+            <div><b>03</b><span>Cited evidence</span></div>
+          </div>
+        </div>
+
+        <div class="chat-view" id="chatView" hidden>
+          <div class="active-document" id="activeDoc">
+            <div class="doc-symbol" id="activeDocIcon">PDF</div>
+            <div class="active-doc-info">
+              <strong id="activeDocName">Document</strong>
+              <span id="activeDocMeta">0 pages · 0 chunks indexed</span>
+            </div>
+            <button class="change-doc" id="changeDocButton">Change</button>
+          </div>
+
+          <div class="qa-thread" id="qaThread"></div>
+
+          <div class="composer-wrap">
+            <div class="suggestions" id="suggestions">
+              <button data-question="What are the main objectives of this document?">Main objectives</button>
+              <button data-question="Summarize the most important findings.">Key findings</button>
+              <button data-question="What are the main conclusions?">Conclusions</button>
+            </div>
+            <form class="ask-form" id="askForm">
+              <textarea id="questionInput" rows="1" placeholder="Ask anything about this document…" autocomplete="off"></textarea>
+              <button type="submit" id="askButton" aria-label="Send question">
+                <svg viewBox="0 0 24 24"><path d="m5 12 14-8-4 16-3.5-6.5L5 12Z"/><path d="M11.5 13.5 19 4"/></svg>
+              </button>
+            </form>
+            <div class="composer-note">
+              <span>Answers are generated from retrieved document context.</span>
+              <span>Enter to send · Shift + Enter for new line</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <div class="upload-progress" id="uploadProgress" hidden>
+        <div class="progress-top">
+          <span id="progressLabel">Processing document…</span>
+          <span id="progressPercent">0%</span>
+        </div>
+        <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+      </div>
+    </main>
+  </div>
+
+  <div class="toast-container" id="toastContainer"></div>
+  <div class="mobile-overlay" id="mobileOverlay"></div>
+  <script src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,21 @@
+# PDF handling & parsing
+pypdf
+pymupdf
+
+# Numerical & ML embeddings
+numpy
+sentence-transformers
+
+# API & Server
+fastapi
+uvicorn[standard]
+python-multipart
+
+# Environment & AI Client
+python-dotenv
+groq
+
+# Database
+chromadb
+
+
