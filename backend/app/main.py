@@ -7,6 +7,8 @@ FastAPI entry point for the Document Intelligence RAG system.
 
 from __future__ import annotations
 
+import os
+import tempfile
 import uuid
 from pathlib import Path
 
@@ -66,9 +68,19 @@ app = FastAPI(
 # CORS
 # ---------------------------------------------------------------------------
 
+cors_origins = (
+    ["*"]
+    if config.CORS_ORIGINS.strip() == "*"
+    else [
+        origin.strip()
+        for origin in config.CORS_ORIGINS.split(",")
+        if origin.strip()
+    ]
+)
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["https://document-intelligence-rag-bpjw.onrender.com"],
+    allow_origins=cors_origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -177,8 +189,24 @@ def health():
     }
 
 
+# ---------------------------------------------------------------------------# Upload helpers
 # ---------------------------------------------------------------------------
-# Upload
+
+
+def create_temp_upload_path(filename: str) -> Path:
+    """Create a temp file in the OS temp directory, not Render's project disk."""
+
+    suffix = Path(filename).suffix.lower()
+    fd, temp_name = tempfile.mkstemp(
+        prefix="doc_upload_",
+        suffix=suffix,
+        dir=tempfile.gettempdir(),
+    )
+    os.close(fd)
+    return Path(temp_name)
+
+
+# ---------------------------------------------------------------------------# Upload
 # ---------------------------------------------------------------------------
 
 @app.post(
@@ -219,14 +247,7 @@ async def upload_document(
     # Temporary upload
     # -----------------------------------------------------------------------
 
-    tmp_name = (
-        f"{uuid.uuid4()}{suffix}"
-    )
-
-    tmp_path = (
-        config.UPLOAD_DIR
-        / tmp_name
-    )
+    tmp_path = create_temp_upload_path(file.filename)
 
     size = 0
 

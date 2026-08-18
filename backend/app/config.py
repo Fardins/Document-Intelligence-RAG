@@ -32,6 +32,13 @@ UPLOAD_DIR = STORAGE_DIR / "uploads"
 STORAGE_DIR.mkdir(parents=True, exist_ok=True)
 UPLOAD_DIR.mkdir(parents=True, exist_ok=True)
 
+# Temporary uploads should be created in the OS temp directory so Render
+# instances do not depend on persistent local disk for short-lived PDF work.
+CORS_ORIGINS = os.getenv(
+    "CORS_ORIGINS",
+    "*",
+)
+
 
 # ---------------------------------------------------------------------------
 # Chunking
