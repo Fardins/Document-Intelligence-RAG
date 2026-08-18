@@ -156,7 +156,7 @@ class AskResponse(BaseModel):
 # Health
 # ---------------------------------------------------------------------------
 
-@app.get("/health")
+@app.get("https://document-intelligence-rag-1.onrender.com/health")
 def health():
 
     return {
